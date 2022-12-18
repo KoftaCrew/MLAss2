@@ -104,7 +104,70 @@ def decision_tree():
         plt.title('Correlation Matrix', fontsize=32)
         plt.show()
 
+
+def euclidean_distance(x, y):
+    return np.sqrt(np.square(x - y).sum())
+    # return np.sqrt(distance)
+
+
+def normalize(data, cols):
+    for col in cols:
+        if col != 'class':
+            data[col] = (data[col] - data[col].mean()) / data[col].std()
+
+    return data
+
+
 def knn():
+    # Read & separate features from target columns from data.csv (Banknote Authentication Data)
+    data = pd.read_csv('./data.csv')
+
+    # divide data into 70% training and 30% test
+    train_data = data.sample(frac=0.7)
+    test_data = data.drop(train_data.index)
+
+    # normalize features separately
+    train_data_norm = normalize(train_data, train_data.columns)  # this normalizes each feature separately
+    test_data_norm = normalize(test_data, test_data.columns)
+
+
+    # Euclidean distance
+
+    correct = {k: 0 for k in range(1, 10)}
+
+    for i in range(len(test_data_norm)):
+        distances = []
+
+        for j in range(len(train_data_norm)):
+            distances.append([euclidean_distance(test_data_norm.iloc[i, :-1], train_data_norm.iloc[j, :-1]),
+                              train_data_norm.iloc[j, -1]])
+
+        distances.sort(key=lambda x: x[0])
+
+        for k in range(1, 10):
+            distances_k = distances.copy()
+            distances_k = distances_k[:k]
+
+            classes = [x[1] for x in distances_k]
+
+            if classes.count(0) > classes.count(1):
+
+                if test_data_norm.iloc[i, -1] == 0:
+                    correct[k] = correct.get(k, 0) + 1
+
+            elif classes.count(0) == classes.count(1):
+                if test_data_norm.iloc[i, -1] == train_data_norm.iloc[1, -1]:
+                    correct[k] = correct.get(k, 0) + 1
+            else:
+
+                if test_data_norm.iloc[i, -1] == 1:
+                    correct[k] += 1
+
+    for k in correct:
+        print("K value: %s" % k)
+        print("Accuracy: %s" % (correct.get(k) / len(test_data_norm) * 100))
+        print("-" * 100)
+    print("Done")
     pass
 
 
@@ -113,7 +176,7 @@ def main():
     print("1. Decision Tree")
     print("2. KNN")
     x = int(input())
-    # sys.stdout = Unbuffered(sys.stdout, "./log.txt")
+    sys.stdout = Unbuffered(sys.stdout, "./logKnn.txt")
     decision_tree() if x == 1 else knn()
 
 
