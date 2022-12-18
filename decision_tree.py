@@ -7,9 +7,7 @@ import sys
 
 # File where you need to keep the logs
 
-
 class Unbuffered:
-
     def __init__(self, stream, file):
         self.stream = stream
         self.file_name = file
@@ -19,6 +17,9 @@ class Unbuffered:
         self.stream.flush()
         with open(self.file_name, 'a') as f:
             f.write(data)
+
+    def flush(self):
+        self.stream.flush()
 
 
 def experiment1():
@@ -139,6 +140,7 @@ def experiment2():
     plt.show()
 
 if __name__ == '__main__':
+    sys.stdout = Unbuffered(sys.stdout, "./logDecisionTree.txt")
     print("-" * 100)
     print("Experiment 1:\n")
     experiment1()

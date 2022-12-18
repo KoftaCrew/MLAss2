@@ -1,0 +1,36 @@
+k value: 1
+Number of correctly classified instances: 412 Total number of instances: 412
+Accuracy: 1.0
+
+k value: 2
+Number of correctly classified instances: 412 Total number of instances: 412
+Accuracy: 1.0
+
+k value: 3
+Number of correctly classified instances: 412 Total number of instances: 412
+Accuracy: 1.0
+
+k value: 4
+Number of correctly classified instances: 412 Total number of instances: 412
+Accuracy: 1.0
+
+k value: 5
+Number of correctly classified instances: 412 Total number of instances: 412
+Accuracy: 1.0
+
+k value: 6
+Number of correctly classified instances: 412 Total number of instances: 412
+Accuracy: 1.0
+
+k value: 7
+Number of correctly classified instances: 412 Total number of instances: 412
+Accuracy: 1.0
+
+k value: 8
+Number of correctly classified instances: 412 Total number of instances: 412
+Accuracy: 1.0
+
+k value: 9
+Number of correctly classified instances: 412 Total number of instances: 412
+Accuracy: 1.0
+
