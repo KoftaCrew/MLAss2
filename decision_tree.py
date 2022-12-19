@@ -25,6 +25,7 @@ class Unbuffered:
 def experiment1():
     # Read & separate features from target columns from data.csv (Banknote Authentication Data)
     data = pd.read_csv('./data.csv')
+    output = pd.DataFrame([], columns=["Rotation", "Split rate", "Accuracy", "Tree size"])
 
     split_rate = 25
     # Repeat 5 times
@@ -55,7 +56,16 @@ def experiment1():
         print(f"Accuracy: {acc.mean() * 100}%")
         print(f"Tree Size: {clf.tree_.node_count}")
         print("-" * 100)
-        
+
+        output = pd.concat([output, pd.DataFrame({
+                "Rotation": [rotation],
+                "Split rate": [split_rate],
+                "Accuracy": [acc.mean() * 100],
+                "Tree size": [clf.tree_.node_count]
+            })])
+
+    output.to_csv("decision_experiment1.csv", index=False)
+    print(output.head())
 
 
 def experiment2():
@@ -67,6 +77,7 @@ def experiment2():
     max_tree = -1
     min_tree = 1e9
 
+    report = pd.DataFrame([], columns=["Rotation", "Split", "Accuracy"])
     # Repeat 5 times
     for split_rate in range(30, 71, 10):
         for rotation in range(1, 6):
@@ -94,12 +105,24 @@ def experiment2():
             print(f"Split Rate: {split_rate}% train {100 - split_rate}% test")
             print(f"Rotation Number {rotation}")
             print(f"Accuracy: {acc.mean() * 100}%")
+
+            report = pd.concat([
+                report,
+                pd.DataFrame({
+                    "Rotation": [rotation],
+                    "Split": [split_rate],
+                    "Accuracy": [acc.mean() * 100]
+                })
+            ])
+
             print("-" * 100)
             acc_np.append([split_rate, acc.mean()])
             num_trees += 1
             set_tree_sizes.append([len(x_train), clf.tree_.node_count])
             max_tree = max(clf.tree_.node_count, max_tree)
             min_tree = min(clf.tree_.node_count, min_tree)
+
+    report.to_csv("decision_experiment2_accuracy.csv", index=False)
     acc_np = np.array(acc_np)
     set_tree_sizes = np.array(set_tree_sizes)
     print("Accuracy array:", acc_np)
@@ -107,6 +130,7 @@ def experiment2():
     print("Max tree size: %s" % max_tree)
     print("Min tree size: %s" % min_tree)
 
+    report = pd.DataFrame([], columns=["Split", "Average accuracy", "Max accuracy", "Min accuracy"])
     for rate in range(30, 71, 10):
         rate_arr = acc_np[acc_np[:, 0] == rate, 1]
         print("-" * 100)
@@ -114,6 +138,16 @@ def experiment2():
         print("Average accuracy: %s" % rate_arr.mean())
         print("Max accuracy: %s" % rate_arr.max())
         print("Min accuracy: %s" % rate_arr.min())
+        report = pd.concat([
+            report,
+            pd.DataFrame({
+                "Split": [rate],
+                "Average accuracy": [rate_arr.mean()],
+                "Max accuracy": [rate_arr.max()],
+                "Min accuracy": [rate_arr.min()]
+            })
+        ])
+    report.to_csv("decision_experiment2_accuracies_across_rates.csv", index=False)
     print("-" * 100)
 
     plt.scatter(acc_np[:, 1], acc_np[:, 0])
@@ -132,12 +166,13 @@ def experiment2():
     f = plt.figure(figsize=(10, 10))
     plt.matshow(df.corr(), fignum=f.number)
     plt.xticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=19,
-                rotation=45)
+               rotation=45)
     plt.yticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=19)
     cb = plt.colorbar()
     cb.ax.tick_params(labelsize=19)
     plt.title('Correlation Matrix', fontsize=19)
     plt.show()
+
 
 if __name__ == '__main__':
     sys.stdout = Unbuffered(sys.stdout, "./logDecisionTree.txt")
